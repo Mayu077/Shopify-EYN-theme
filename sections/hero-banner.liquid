@@ -54,13 +54,10 @@
 }
 {% endschema %}
 
-<section class="hero" style="background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}');">
-  <div class="hero-overlay" style="background-color: {{ section.settings.overlay_color }}; opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
-  
+<section class="hero">
   <div class="container hero-content">
-    <h1>{{ section.settings.title }}</h1>
-    <p class="tagline">{{ section.settings.subtitle }}</p>
-    
+    <h1>Welcome to <span class="brand">EYN</span></h1>
+    <p class="tagline">Experience the Pinnacle of Premium Shopping</p>
     <div class="hero-features">
       <div class="feature">
         <span class="feature-icon">🚀</span>
@@ -75,14 +72,10 @@
         <span>Secure Shopping</span>
       </div>
     </div>
-    
     <div class="hero-buttons">
-      <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="hero-btn primary">
-        {{ section.settings.button_text }}
-      </a>
-      <a href="{{ routes.all_products_collection_url }}" class="hero-btn secondary">Explore Collections</a>
+      <a href="/collections" class="hero-btn primary">Explore Collections</a>
+      <a href="/products" class="hero-btn secondary">Shop Now</a>
     </div>
-    
     <div class="hero-stats">
       <div class="stat">
         <span class="stat-number">10K+</span>
@@ -98,7 +91,6 @@
       </div>
     </div>
   </div>
-  
   <div class="hero-background">
     <div class="floating-shapes">
       <div class="shape shape-1"></div>

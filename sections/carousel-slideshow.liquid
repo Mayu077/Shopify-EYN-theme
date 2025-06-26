@@ -78,39 +78,28 @@
 
 <section class="carousel">
   <div class="carousel-container">
-    {% if section.settings.show_arrows %}
-      <button class="carousel-arrow left" aria-label="Previous Slide">&#10094;</button>
-    {% endif %}
-    
+    <button class="carousel-arrow left" aria-label="Previous Slide">&#10094;</button>
     <div class="carousel-track">
-      {% for block in section.blocks %}
-        <div class="carousel-slide" data-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
-          {% if block.settings.image %}
-            <img src="{{ block.settings.image | image_url: width: 1200 }}" alt="{{ block.settings.title | default: 'Slide' }}">
-          {% endif %}
-          
-          {% if block.settings.title or block.settings.subtitle or block.settings.button_text %}
-            <div class="slide-content">
-              {% if block.settings.title %}
-                <h2>{{ block.settings.title }}</h2>
-              {% endif %}
-              
-              {% if block.settings.subtitle %}
-                <p>{{ block.settings.subtitle }}</p>
-              {% endif %}
-              
-              {% if block.settings.button_text and block.settings.button_link %}
-                <a href="{{ block.settings.button_link }}" class="slide-btn">{{ block.settings.button_text }}</a>
-              {% endif %}
-            </div>
-          {% endif %}
-        </div>
-      {% endfor %}
+      <div class="carousel-slide" data-index="0">
+        <img src="{{ 'GIFT STORE.jpg' | asset_url }}" alt="Gift Store Banner">
+      </div>
+      <div class="carousel-slide" data-index="1">
+        <img src="{{ 'Gear Up Fest Banner.jpg' | asset_url }}" alt="Gear Up Fest Banner">
+      </div>
+      <div class="carousel-slide" data-index="2">
+        <img src="{{ 'EYN Gadget Verse Banner.png' | asset_url }}" alt="EYN Gadget Verse Banner">
+      </div>
+      <div class="carousel-slide" data-index="3">
+        <img src="{{ 'eyn Bestsellers Gift Collection.png' | asset_url }}" alt="EYN Bestsellers Gift Collection">
+      </div>
+      <div class="carousel-slide" data-index="4">
+        <img src="{{ 'EYN Style Hub Banner.png' | asset_url }}" alt="EYN Style Hub Banner">
+      </div>
+      <div class="carousel-slide" data-index="5">
+        <img src="{{ 'Monsoon Splash Sale Banner.png' | asset_url }}" alt="Monsoon Splash Sale Banner">
+      </div>
     </div>
-    
-    {% if section.settings.show_arrows %}
-      <button class="carousel-arrow right" aria-label="Next Slide">&#10095;</button>
-    {% endif %}
+    <button class="carousel-arrow right" aria-label="Next Slide">&#10095;</button>
   </div>
   
   {% if section.settings.show_dots and section.blocks.size > 1 %}
