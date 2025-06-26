@@ -30,39 +30,17 @@
   <!-- Navbar -->
   <header class="navbar">
     <div class="container nav-content">
-      {% if section.settings.logo != blank %}
-        <a href="{{ routes.root_url }}" class="logo-link">
-          <img src="{{ section.settings.logo | image_url: width: 150 }}" alt="{{ shop.name }}" class="logo">
-        </a>
-      {% else %}
-        <a href="{{ routes.root_url }}" class="logo-text">{{ shop.name }}</a>
-      {% endif %}
-      
+      <img src="{{ 'white logo black bg.jpg' | asset_url }}" alt="EYN Logo" class="logo">
       <nav>
         <ul class="nav-links">
-          {% for link in linklists.main-menu.links %}
-            <li>
-              <a href="{{ link.url }}" {% if link.active %}class="active"{% endif %}>
-                {{ link.title }}
-              </a>
-            </li>
-          {% endfor %}
+          <li><a href="/">Home</a></li>
+          <li><a href="/products">Products</a></li>
+          <li><a href="/collections">Collections</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
         </ul>
       </nav>
-      
-      <div class="nav-actions">
-        <div class="search-box">
-          <form action="{{ routes.search_url }}" method="get" class="search-form">
-            <input type="text" name="q" placeholder="Search products..." id="searchInput" value="{{ search.terms | escape }}">
-            <button type="submit" class="search-btn">🔍</button>
-          </form>
-        </div>
-        
-        <a href="{{ routes.cart_url }}" class="cart-btn">
-          🛒 <span class="cart-count">{{ cart.item_count }}</span>
-        </a>
-      </div>
-      
+      <a href="/products" class="cta-btn">Shop Now</a>
       <div class="hamburger" id="hamburger">
         <span></span><span></span><span></span>
       </div>
