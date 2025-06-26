@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+  
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+  
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Theme CSS -->
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Shopify required -->
+  {{ content_for_header }}
+  
+  <!-- Theme JavaScript -->
+  {{ 'theme.js' | asset_url | script_tag }}
+</head>
+
+<body class="template-{{ template | split: '.' | first }}">
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container nav-content">
+      {% if section.settings.logo != blank %}
+        <a href="{{ routes.root_url }}" class="logo-link">
+          <img src="{{ section.settings.logo | image_url: width: 150 }}" alt="{{ shop.name }}" class="logo">
+        </a>
+      {% else %}
+        <a href="{{ routes.root_url }}" class="logo-text">{{ shop.name }}</a>
+      {% endif %}
+      
+      <nav>
+        <ul class="nav-links">
+          {% for link in linklists.main-menu.links %}
+            <li>
+              <a href="{{ link.url }}" {% if link.active %}class="active"{% endif %}>
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+      
+      <div class="nav-actions">
+        <div class="search-box">
+          <form action="{{ routes.search_url }}" method="get" class="search-form">
+            <input type="text" name="q" placeholder="Search products..." id="searchInput" value="{{ search.terms | escape }}">
+            <button type="submit" class="search-btn">🔍</button>
+          </form>
+        </div>
+        
+        <a href="{{ routes.cart_url }}" class="cart-btn">
+          🛒 <span class="cart-count">{{ cart.item_count }}</span>
+        </a>
+      </div>
+      
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main role="main" id="MainContent">
+    {{ content_for_layout }}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      {% if section.settings.footer_logo != blank %}
+        <img src="{{ section.settings.footer_logo | image_url: width: 100 }}" alt="{{ shop.name }}" class="footer-logo">
+      {% endif %}
+      
+      <p>&copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. All rights reserved.</p>
+      
+      <div class="footer-links">
+        {% for link in linklists.footer.links %}
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </footer>
+
+  <!-- Newsletter Popup -->
+  {% if section.settings.show_newsletter_popup %}
+    <div id="newsletter-popup" class="newsletter-popup" style="display: none;">
+      <div class="popup-content">
+        <button class="popup-close" onclick="closeNewsletterPopup()">×</button>
+        <h3>{{ section.settings.popup_title }}</h3>
+        <p>{{ section.settings.popup_text }}</p>
+        {% form 'customer' %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <input type="email" name="contact[email]" placeholder="Enter your email" required>
+          <button type="submit">Subscribe</button>
+        {% endform %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Cart Drawer -->
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-drawer-content">
+      <div class="cart-header">
+        <h3>Shopping Cart</h3>
+        <button class="cart-close" onclick="closeCartDrawer()">×</button>
+      </div>
+      
+      <div class="cart-items">
+        {% if cart.item_count > 0 %}
+          {% for item in cart.items %}
+            <div class="cart-item" data-item-key="{{ item.key }}">
+              <img src="{{ item.image | image_url: width: 80 }}" alt="{{ item.title }}">
+              <div class="cart-item-details">
+                <h4>{{ item.title }}</h4>
+                <p class="cart-item-price">{{ item.final_price | money }}</p>
+                <div class="cart-item-quantity">
+                  <button onclick="updateCartQuantity('{{ item.key }}', {{ item.quantity | minus: 1 }})">-</button>
+                  <span>{{ item.quantity }}</span>
+                  <button onclick="updateCartQuantity('{{ item.key }}', {{ item.quantity | plus: 1 }})">+</button>
+                </div>
+              </div>
+              <button class="cart-item-remove" onclick="removeFromCart('{{ item.key }}')">×</button>
+            </div>
+          {% endfor %}
+          
+          <div class="cart-footer">
+            <div class="cart-total">
+              <strong>Total: {{ cart.total_price | money }}</strong>
+            </div>
+            <a href="{{ routes.cart_url }}" class="cart-checkout-btn">Checkout</a>
+          </div>
+        {% else %}
+          <p>Your cart is empty</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme Settings -->
+  <script>
+    window.theme = {
+      moneyFormat: {{ shop.money_format | json }},
+      cartUrl: {{ routes.cart_url | json }},
+      searchUrl: {{ routes.search_url | json }},
+      productUrl: {{ routes.product_url | json }},
+      collectionUrl: {{ routes.collection_url | json }}
+    };
+  </script>
+</body>
+</html> 
