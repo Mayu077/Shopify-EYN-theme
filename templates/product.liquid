@@ -1,0 +1,163 @@
+<div class="product-page">
+  <div class="container">
+    <div class="product-layout">
+      <!-- Product Images -->
+      <div class="product-images">
+        <div class="product-image-main">
+          <img id="main-product-image" src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title }}">
+        </div>
+        
+        {% if product.images.size > 1 %}
+          <div class="product-image-thumbnails">
+            {% for image in product.images %}
+              <div class="thumbnail-item" onclick="changeMainImage('{{ image | image_url: width: 600 }}')">
+                <img src="{{ image | image_url: width: 100 }}" alt="{{ product.title }}">
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Product Details -->
+      <div class="product-details">
+        <h1 class="product-title">{{ product.title }}</h1>
+        
+        <div class="product-price">
+          {% if product.compare_at_price > product.price %}
+            <span class="product-price-sale">{{ product.price | money }}</span>
+            <span class="product-price-compare">{{ product.compare_at_price | money }}</span>
+            <span class="product-discount">
+              -{{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%
+            </span>
+          {% else %}
+            <span class="product-price-regular">{{ product.price | money }}</span>
+          {% endif %}
+        </div>
+
+        <div class="product-description">
+          {{ product.description }}
+        </div>
+
+        {% form 'product', product %}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          
+          <!-- Variant Options -->
+          {% unless product.has_only_default_variant %}
+            {% for option in product.options_with_values %}
+              <div class="product-option">
+                <label for="Option{{ option.position }}">
+                  {{ option.name }}:
+                </label>
+                <select id="Option{{ option.position }}" name="options[{{ option.name | escape }}]">
+                  {% for value in option.values %}
+                    <option value="{{ value | escape }}" {% if option.selected_value == value %}selected="selected"{% endif %}>
+                      {{ value }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            {% endfor %}
+          {% endunless %}
+
+          <!-- Quantity -->
+          <div class="product-quantity">
+            <label for="Quantity">Quantity:</label>
+            <input type="number" id="Quantity" name="quantity" value="1" min="1">
+          </div>
+
+          <!-- Add to Cart -->
+          <button type="submit" class="add-to-cart-btn" {% unless product.available %}disabled{% endunless %}>
+            {% if product.available %}
+              Add to Cart
+            {% else %}
+              Sold Out
+            {% endif %}
+          </button>
+        {% endform %}
+
+        <!-- Product Meta -->
+        <div class="product-meta">
+          {% if product.vendor %}
+            <p><strong>Vendor:</strong> {{ product.vendor }}</p>
+          {% endif %}
+          
+          {% if product.type %}
+            <p><strong>Type:</strong> {{ product.type }}</p>
+          {% endif %}
+          
+          {% if product.tags.size > 0 %}
+            <p><strong>Tags:</strong> 
+              {% for tag in product.tags %}
+                <span class="product-tag">{{ tag }}</span>
+              {% endfor %}
+            </p>
+          {% endif %}
+        </div>
+
+        <!-- Social Sharing -->
+        <div class="product-sharing">
+          <h4>Share this product:</h4>
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ product.url }}" target="_blank">Facebook</a>
+          <a href="https://twitter.com/intent/tweet?text={{ product.title | escape }}&url={{ shop.url }}{{ product.url }}" target="_blank">Twitter</a>
+          <a href="https://pinterest.com/pin/create/button/?url={{ shop.url }}{{ product.url }}&media={{ product.featured_image | image_url }}&description={{ product.title | escape }}" target="_blank">Pinterest</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Related Products -->
+{% if product.collections.size > 0 %}
+  <div class="related-products">
+    <div class="container">
+      <h2>Related Products</h2>
+      <div class="products-grid">
+        {% assign related_products = product.collections.first.products | where: "id" | limit: 4 %}
+        {% for related_product in related_products %}
+          {% unless related_product.id == product.id %}
+            <div class="product-card">
+              <a href="{{ related_product.url }}">
+                <img src="{{ related_product.featured_image | image_url: width: 300 }}" alt="{{ related_product.title }}">
+                <h3>{{ related_product.title }}</h3>
+                <p class="price">{{ related_product.price | money }}</p>
+              </a>
+            </div>
+          {% endunless %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<script>
+function changeMainImage(imageUrl) {
+  document.getElementById('main-product-image').src = imageUrl;
+}
+
+// Variant selection handling
+document.addEventListener('DOMContentLoaded', function() {
+  const variantSelects = document.querySelectorAll('select[name^="options"]');
+  
+  variantSelects.forEach(select => {
+    select.addEventListener('change', function() {
+      // Update variant ID and price
+      updateVariant();
+    });
+  });
+});
+
+function updateVariant() {
+  // This would typically make an AJAX call to get variant details
+  // For now, we'll just update the form
+  const form = document.querySelector('form[action*="/cart/add"]');
+  const variantId = getSelectedVariantId();
+  const variantIdInput = form.querySelector('input[name="id"]');
+  variantIdInput.value = variantId;
+}
+
+function getSelectedVariantId() {
+  // This is a simplified version - in a real implementation,
+  // you'd need to match the selected options to the correct variant
+  return {{ product.selected_or_first_available_variant.id }};
+}
+</script> 

@@ -1,0 +1,242 @@
+<div class="collection-page">
+  <div class="container">
+    <!-- Collection Header -->
+    <div class="collection-header">
+      <h1>{{ collection.title }}</h1>
+      {% if collection.description != blank %}
+        <div class="collection-description">
+          {{ collection.description }}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Collection Image -->
+    {% if collection.image %}
+      <div class="collection-banner">
+        <img src="{{ collection.image | image_url: width: 1200 }}" alt="{{ collection.title }}">
+      </div>
+    {% endif %}
+
+    <!-- Filters and Products -->
+    <div class="collection-layout">
+      <!-- Filters Sidebar -->
+      <aside class="collection-filters">
+        <h3>Filter by</h3>
+        
+        <!-- Product Type Filter -->
+        {% assign product_types = collection.all_products | map: 'type' | uniq %}
+        {% if product_types.size > 1 %}
+          <div class="filter-group">
+            <h4>Product Type</h4>
+            {% for type in product_types %}
+              {% if type != blank %}
+                <label>
+                  <input type="checkbox" name="filter.v.type" value="{{ type | escape }}" 
+                         {% if current_tags contains type %}checked{% endif %}>
+                  {{ type }}
+                </label>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Vendor Filter -->
+        {% assign vendors = collection.all_products | map: 'vendor' | uniq %}
+        {% if vendors.size > 1 %}
+          <div class="filter-group">
+            <h4>Vendor</h4>
+            {% for vendor in vendors %}
+              {% if vendor != blank %}
+                <label>
+                  <input type="checkbox" name="filter.v.vendor" value="{{ vendor | escape }}"
+                         {% if current_tags contains vendor %}checked{% endif %}>
+                  {{ vendor }}
+                </label>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Price Filter -->
+        <div class="filter-group">
+          <h4>Price Range</h4>
+          <div class="price-range">
+            <input type="range" id="priceRange" min="0" max="1000" value="1000">
+            <div class="price-inputs">
+              <input type="number" id="minPrice" placeholder="Min" min="0">
+              <span>-</span>
+              <input type="number" id="maxPrice" placeholder="Max" max="1000">
+            </div>
+          </div>
+        </div>
+
+        <!-- Clear Filters -->
+        {% if current_tags.size > 0 %}
+          <a href="{{ collection.url }}" class="clear-filters">Clear All Filters</a>
+        {% endif %}
+      </aside>
+
+      <!-- Products Grid -->
+      <main class="collection-products">
+        <!-- Sort and View Options -->
+        <div class="collection-toolbar">
+          <div class="collection-results">
+            <span>{{ paginate.current_page }} of {{ paginate.pages }} pages</span>
+            <span>({{ collection.all_products_count }} products)</span>
+          </div>
+          
+          <div class="collection-sort">
+            <label for="sort-by">Sort by:</label>
+            <select id="sort-by" onchange="sortCollection(this.value)">
+              <option value="manual" {% if collection.sort_by == 'manual' %}selected{% endif %}>Featured</option>
+              <option value="price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>Price: Low to High</option>
+              <option value="price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>Price: High to Low</option>
+              <option value="title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>A-Z</option>
+              <option value="title-descending" {% if collection.sort_by == 'title-descending' %}selected{% endif %}>Z-A</option>
+              <option value="created-ascending" {% if collection.sort_by == 'created-ascending' %}selected{% endif %}>Oldest to Newest</option>
+              <option value="created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>Newest to Oldest</option>
+              <option value="best-selling" {% if collection.sort_by == 'best-selling' %}selected{% endif %}>Best Selling</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        {% if collection.products.size > 0 %}
+          <div class="products-grid">
+            {% for product in collection.products %}
+              <div class="product-card">
+                <div class="product-image">
+                  <a href="{{ product.url }}">
+                    <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title }}">
+                  </a>
+                  <div class="product-overlay">
+                    <button class="quick-view" onclick="quickView('{{ product.url }}')">Quick View</button>
+                  </div>
+                </div>
+                
+                <div class="product-info">
+                  <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+                  
+                  {% if product.vendor %}
+                    <p class="product-vendor">{{ product.vendor }}</p>
+                  {% endif %}
+                  
+                  <div class="product-price">
+                    {% if product.compare_at_price > product.price %}
+                      <span class="current-price">{{ product.price | money }}</span>
+                      <span class="original-price">{{ product.compare_at_price | money }}</span>
+                      <span class="discount">
+                        -{{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%
+                      </span>
+                    {% else %}
+                      <span class="current-price">{{ product.price | money }}</span>
+                    {% endif %}
+                  </div>
+                  
+                  <button class="add-to-cart" onclick="addToCart({{ product.selected_or_first_available_variant.id }})">
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Pagination -->
+          {% if paginate.pages > 1 %}
+            <div class="pagination">
+              {{ paginate | default_pagination }}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="no-products">
+            <h3>No products found</h3>
+            <p>Try adjusting your filters or search terms.</p>
+          </div>
+        {% endif %}
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- Quick View Modal -->
+<div id="quick-view-modal" class="quick-view-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeQuickView()">&times;</span>
+    <div id="quick-view-content"></div>
+  </div>
+</div>
+
+<script>
+function sortCollection(value) {
+  const url = new URL(window.location);
+  url.searchParams.set('sort_by', value);
+  window.location = url;
+}
+
+function quickView(productUrl) {
+  fetch(productUrl + '?view=quick-view')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('quick-view-content').innerHTML = html;
+      document.getElementById('quick-view-modal').style.display = 'block';
+    });
+}
+
+function closeQuickView() {
+  document.getElementById('quick-view-modal').style.display = 'none';
+}
+
+function addToCart(variantId) {
+  const formData = {
+    items: [{
+      id: variantId,
+      quantity: 1
+    }]
+  };
+
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Update cart count
+    updateCartCount();
+    // Show success message
+    showNotification('Product added to cart!', 'success');
+  })
+  .catch(error => {
+    showNotification('Error adding product to cart', 'error');
+  });
+}
+
+function updateCartCount() {
+  fetch('/cart.js')
+    .then(response => response.json())
+    .then(cart => {
+      document.querySelector('.cart-count').textContent = cart.item_count;
+    });
+}
+
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('quick-view-modal');
+  if (event.target == modal) {
+    closeQuickView();
+  }
+}
+</script> 

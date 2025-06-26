@@ -1,0 +1,184 @@
+<div class="search-page">
+  <div class="container">
+    <div class="search-header">
+      <h1>Search Results</h1>
+      <p>Showing results for "{{ search.terms }}"</p>
+    </div>
+    
+    {% if search.results_count > 0 %}
+      <div class="search-results">
+        <div class="results-count">
+          {{ search.results_count }} results found
+        </div>
+        
+        <div class="products-grid">
+          {% for item in search.results %}
+            {% if item.object_type == 'product' %}
+              <div class="product-card">
+                <div class="product-image">
+                  <a href="{{ item.url }}">
+                    <img src="{{ item.featured_image | image_url: width: 300 }}" alt="{{ item.title }}">
+                  </a>
+                </div>
+                
+                <div class="product-info">
+                  <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
+                  <p class="product-price">{{ item.price | money }}</p>
+                  <button class="add-to-cart" onclick="addToCart({{ item.selected_or_first_available_variant.id }})">
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="no-results">
+        <h2>No results found</h2>
+        <p>Try adjusting your search terms or browse our collections.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="browse-btn">Browse All Products</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.search-page {
+  padding: 80px 0;
+}
+
+.search-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.search-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.search-header p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.results-count {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #666;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.no-results h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.browse-btn {
+  display: inline-block;
+  background: #333;
+  color: white;
+  padding: 15px 30px;
+  text-decoration: none;
+  border-radius: 8px;
+  margin-top: 20px;
+  transition: background 0.3s ease;
+}
+
+.browse-btn:hover {
+  background: #555;
+}
+
+@media (max-width: 768px) {
+  .search-page {
+    padding: 60px 20px;
+  }
+  
+  .search-header h1 {
+    font-size: 2rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+}
+</style>
+
+<script>
+function sortSearch(value) {
+  const url = new URL(window.location);
+  url.searchParams.set('sort_by', value);
+  window.location = url;
+}
+
+function filterSearch(value) {
+  const url = new URL(window.location);
+  if (value === 'all') {
+    url.searchParams.delete('type');
+  } else {
+    url.searchParams.set('type', value);
+  }
+  window.location = url;
+}
+
+function addToCart(variantId) {
+  const formData = {
+    items: [{
+      id: variantId,
+      quantity: 1
+    }]
+  };
+
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    updateCartCount();
+    showNotification('Product added to cart!', 'success');
+  })
+  .catch(error => {
+    showNotification('Error adding product to cart', 'error');
+  });
+}
+
+function updateCartCount() {
+  fetch('/cart.js')
+    .then(response => response.json())
+    .then(cart => {
+      const cartCount = document.querySelector('.cart-count');
+      if (cartCount) {
+        cartCount.textContent = cart.item_count;
+      }
+    });
+}
+
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+</script> 
