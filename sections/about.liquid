@@ -1,0 +1,29 @@
+<section class="about" id="about">
+  <div class="container about-content">
+    <h2>{{ section.settings.title }}</h2>
+    <p>{{ section.settings.text }}</p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "About EYN"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "About Text",
+      "default": "EYN is your destination for premium, handpicked products that blend style, innovation, and quality. Our mission is to deliver an unparalleled shopping experience, with a curated selection that meets the highest standards of excellence."
+    }
+  ],
+  "presets": [
+    { "name": "About Section" }
+  ]
+}
+{% endschema %} 

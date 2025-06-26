@@ -1,0 +1,27 @@
+<section class="banner-section">
+  {% if section.settings.banner_image %}
+    <img src="{{ section.settings.banner_image | image_url: width: 1600 }}" alt="{{ section.settings.banner_alt | escape }}" class="banner-image">
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Banner Section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "text",
+      "id": "banner_alt",
+      "label": "Alt Text",
+      "default": "EYN Banner"
+    }
+  ],
+  "presets": [
+    { "name": "Banner Section" }
+  ]
+}
+{% endschema %} 
