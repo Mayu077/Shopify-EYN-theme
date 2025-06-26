@@ -1,0 +1,351 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "EYN Premium Store",
+    "theme_version": "1.0.0",
+    "theme_author": "EYN Team",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "color",
+        "id": "primary_color",
+        "label": "Primary Color",
+        "default": "#333333"
+      },
+      {
+        "type": "color",
+        "id": "secondary_color",
+        "label": "Secondary Color",
+        "default": "#666666"
+      },
+      {
+        "type": "color",
+        "id": "accent_color",
+        "label": "Accent Color",
+        "default": "#ff4757"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text Color",
+        "default": "#333333"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "heading_font",
+        "label": "Heading Font",
+        "default": "helvetica_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "body_font",
+        "label": "Body Font",
+        "default": "helvetica_n4"
+      },
+      {
+        "type": "range",
+        "id": "base_font_size",
+        "label": "Base Font Size",
+        "min": 12,
+        "max": 20,
+        "step": 1,
+        "default": 16,
+        "unit": "px"
+      }
+    ]
+  },
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+      },
+      {
+        "type": "range",
+        "id": "logo_max_width",
+        "label": "Logo Max Width",
+        "min": 50,
+        "max": 300,
+        "step": 10,
+        "default": 150,
+        "unit": "px"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_search",
+        "label": "Show Search Bar",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "sticky_header",
+        "label": "Sticky Header",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "footer_logo",
+        "label": "Footer Logo"
+      },
+      {
+        "type": "text",
+        "id": "footer_text",
+        "label": "Footer Text",
+        "default": "© 2024 EYN. All rights reserved."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_social_links",
+        "label": "Show Social Media Links",
+        "default": true
+      },
+      {
+        "type": "url",
+        "id": "facebook_url",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "url",
+        "id": "twitter_url",
+        "label": "Twitter URL"
+      },
+      {
+        "type": "url",
+        "id": "instagram_url",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "url",
+        "id": "pinterest_url",
+        "label": "Pinterest URL"
+      }
+    ]
+  },
+  {
+    "name": "Homepage",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_hero_banner",
+        "label": "Show Hero Banner",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_carousel",
+        "label": "Show Carousel Slideshow",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_featured_collections",
+        "label": "Show Featured Collections",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_featured_products",
+        "label": "Show Featured Products",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_newsletter",
+        "label": "Show Newsletter Signup",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Product Pages",
+    "settings": [
+      {
+        "type": "select",
+        "id": "product_image_zoom",
+        "label": "Product Image Zoom",
+        "options": [
+          {
+            "value": "lightbox",
+            "label": "Lightbox"
+          },
+          {
+            "value": "zoom",
+            "label": "Zoom on Hover"
+          },
+          {
+            "value": "none",
+            "label": "None"
+          }
+        ],
+        "default": "lightbox"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_related_products",
+        "label": "Show Related Products",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "related_products_count",
+        "label": "Number of Related Products",
+        "min": 2,
+        "max": 8,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "checkbox",
+        "id": "show_social_sharing",
+        "label": "Show Social Sharing",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart Type",
+        "options": [
+          {
+            "value": "page",
+            "label": "Cart Page"
+          },
+          {
+            "value": "drawer",
+            "label": "Cart Drawer"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cart_notes",
+        "label": "Show Cart Notes",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_shipping_calculator",
+        "label": "Show Shipping Calculator",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "text",
+        "id": "social_facebook_link",
+        "label": "Facebook",
+        "info": "https://www.facebook.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter_link",
+        "label": "Twitter",
+        "info": "https://twitter.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest_link",
+        "label": "Pinterest",
+        "info": "https://www.pinterest.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram_link",
+        "label": "Instagram",
+        "info": "https://instagram.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok_link",
+        "label": "TikTok",
+        "info": "https://tiktok.com/@shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_tumblr_link",
+        "label": "Tumblr",
+        "info": "https://shopify.tumblr.com"
+      },
+      {
+        "type": "text",
+        "id": "social_snapchat_link",
+        "label": "Snapchat",
+        "info": "https://snapchat.com/add/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube_link",
+        "label": "YouTube",
+        "info": "https://www.youtube.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_vimeo_link",
+        "label": "Vimeo",
+        "info": "https://vimeo.com/shopify"
+      }
+    ]
+  },
+  {
+    "name": "Newsletter",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_newsletter_popup",
+        "label": "Show Newsletter Popup",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "popup_title",
+        "label": "Popup Title",
+        "default": "Stay Updated"
+      },
+      {
+        "type": "textarea",
+        "id": "popup_text",
+        "label": "Popup Text",
+        "default": "Subscribe to our newsletter for exclusive offers and updates."
+      },
+      {
+        "type": "range",
+        "id": "popup_delay",
+        "label": "Popup Delay (seconds)",
+        "min": 0,
+        "max": 30,
+        "step": 5,
+        "default": 10
+      }
+    ]
+  }
+] 
