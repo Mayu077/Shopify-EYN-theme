@@ -1,0 +1,224 @@
+{% schema %}
+{
+  "name": "Featured Collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Featured Collections"
+    },
+    {
+      "type": "range",
+      "id": "collections_count",
+      "label": "Number of Collections",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "carousel",
+          "label": "Carousel"
+        }
+      ],
+      "default": "grid"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image (optional)"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collections",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<section class="collections" id="collections">
+  <div class="container">
+    <h2>{{ section.settings.title }}</h2>
+    
+    <div class="collections-grid">
+      {% for block in section.blocks limit: section.settings.collections_count %}
+        {% assign collection = block.settings.collection %}
+        {% if collection %}
+          <div class="collection-card" {{ block.shopify_attributes }}>
+            <a href="{{ collection.url }}">
+              {% if block.settings.custom_image %}
+                <img src="{{ block.settings.custom_image | image_url: width: 400 }}" alt="{{ block.settings.custom_title | default: collection.title }}">
+              {% elsif collection.image %}
+                <img src="{{ collection.image | image_url: width: 400 }}" alt="{{ block.settings.custom_title | default: collection.title }}">
+              {% else %}
+                <div class="collection-placeholder">
+                  <span>📦</span>
+                </div>
+              {% endif %}
+              
+              <h3>{{ block.settings.custom_title | default: collection.title }}</h3>
+              
+              {% if collection.description != blank %}
+                <p class="collection-description">{{ collection.description | strip_html | truncate: 100 }}</p>
+              {% endif %}
+              
+              <span class="collection-count">{{ collection.all_products_count }} products</span>
+            </a>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    
+    {% if section.blocks.size == 0 %}
+      <div class="collections-placeholder">
+        <p>No collections selected. Add collection blocks in the theme editor.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+.collections {
+  padding: 80px 0;
+  background: #f8f9fa;
+}
+
+.collections h2 {
+  text-align: center;
+  margin-bottom: 50px;
+  font-size: 2.5rem;
+  color: #333;
+}
+
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.collection-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.collection-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.collection-card a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.collection-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.collection-placeholder {
+  width: 100%;
+  height: 200px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.collection-card h3 {
+  padding: 20px 20px 10px;
+  margin: 0;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.collection-description {
+  padding: 0 20px 10px;
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.collection-count {
+  display: block;
+  padding: 0 20px 20px;
+  color: #888;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.collections-placeholder {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .collections {
+    padding: 60px 0;
+  }
+  
+  .collections h2 {
+    font-size: 2rem;
+    margin-bottom: 40px;
+  }
+  
+  .collections-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 0 20px;
+  }
+}
+</style> 

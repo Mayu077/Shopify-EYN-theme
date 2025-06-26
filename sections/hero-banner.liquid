@@ -1,0 +1,110 @@
+{% schema %}
+{
+  "name": "Hero Banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Welcome to EYN"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Experience the Pinnacle of Premium Shopping"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="hero" style="background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}');">
+  <div class="hero-overlay" style="background-color: {{ section.settings.overlay_color }}; opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+  
+  <div class="container hero-content">
+    <h1>{{ section.settings.title }}</h1>
+    <p class="tagline">{{ section.settings.subtitle }}</p>
+    
+    <div class="hero-features">
+      <div class="feature">
+        <span class="feature-icon">🚀</span>
+        <span>Premium Quality</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <span>Fast Delivery</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🛡️</span>
+        <span>Secure Shopping</span>
+      </div>
+    </div>
+    
+    <div class="hero-buttons">
+      <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="hero-btn primary">
+        {{ section.settings.button_text }}
+      </a>
+      <a href="{{ routes.all_products_collection_url }}" class="hero-btn secondary">Explore Collections</a>
+    </div>
+    
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number">10K+</span>
+        <span class="stat-label">Happy Customers</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">500+</span>
+        <span class="stat-label">Premium Products</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">24/7</span>
+        <span class="stat-label">Support</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="hero-background">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+  </div>
+</section> 

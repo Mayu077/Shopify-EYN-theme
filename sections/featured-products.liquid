@@ -1,0 +1,478 @@
+{% schema %}
+{
+  "name": "Featured Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Featured Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection to display"
+    },
+    {
+      "type": "range",
+      "id": "products_count",
+      "label": "Number of Products",
+      "min": 4,
+      "max": 12,
+      "step": 2,
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "products_per_row",
+      "label": "Products per Row",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show Product Vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_view",
+      "label": "Show Quick View Button",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Products"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="products" id="products">
+  <div class="container">
+    <h2>{{ section.settings.title }}</h2>
+    
+    {% assign products = collections[section.settings.collection].products %}
+    {% if products.size == 0 %}
+      {% assign products = collections.all.products %}
+    {% endif %}
+    
+    <div class="products-grid" style="grid-template-columns: repeat({{ section.settings.products_per_row }}, 1fr);">
+      {% for product in products limit: section.settings.products_count %}
+        <div class="product-card">
+          <div class="product-image">
+            <a href="{{ product.url }}">
+              <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
+            </a>
+            
+            {% if section.settings.show_quick_view %}
+              <div class="product-overlay">
+                <button class="quick-view" onclick="quickView('{{ product.url }}')">Quick View</button>
+              </div>
+            {% endif %}
+            
+            {% if product.compare_at_price > product.price %}
+              <div class="product-badge">
+                <span class="discount-badge">
+                  -{{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%
+                </span>
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="product-info">
+            <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+            
+            {% if section.settings.show_vendor and product.vendor %}
+              <p class="product-vendor">{{ product.vendor }}</p>
+            {% endif %}
+            
+            <div class="product-price">
+              {% if product.compare_at_price > product.price %}
+                <span class="current-price">{{ product.price | money }}</span>
+                <span class="original-price">{{ product.compare_at_price | money }}</span>
+              {% else %}
+                <span class="current-price">{{ product.price | money }}</span>
+              {% endif %}
+            </div>
+            
+            <button class="add-to-cart" onclick="addToCart({{ product.selected_or_first_available_variant.id }})">
+              {% if product.available %}
+                Add to Cart
+              {% else %}
+                Sold Out
+              {% endif %}
+            </button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    {% if products.size == 0 %}
+      <div class="products-placeholder">
+        <p>No products found. Please select a collection or add products to your store.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Quick View Modal -->
+<div id="quick-view-modal" class="quick-view-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeQuickView()">&times;</span>
+    <div id="quick-view-content"></div>
+  </div>
+</div>
+
+<script>
+function quickView(productUrl) {
+  fetch(productUrl + '?view=quick-view')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('quick-view-content').innerHTML = html;
+      document.getElementById('quick-view-modal').style.display = 'block';
+    })
+    .catch(error => {
+      console.error('Error loading quick view:', error);
+    });
+}
+
+function closeQuickView() {
+  document.getElementById('quick-view-modal').style.display = 'none';
+}
+
+function addToCart(variantId) {
+  const formData = {
+    items: [{
+      id: variantId,
+      quantity: 1
+    }]
+  };
+
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    updateCartCount();
+    showNotification('Product added to cart!', 'success');
+  })
+  .catch(error => {
+    showNotification('Error adding product to cart', 'error');
+  });
+}
+
+function updateCartCount() {
+  fetch('/cart.js')
+    .then(response => response.json())
+    .then(cart => {
+      const cartCount = document.querySelector('.cart-count');
+      if (cartCount) {
+        cartCount.textContent = cart.item_count;
+      }
+    });
+}
+
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('quick-view-modal');
+  if (event.target == modal) {
+    closeQuickView();
+  }
+}
+</script>
+
+<style>
+.products {
+  padding: 80px 0;
+}
+
+.products h2 {
+  text-align: center;
+  margin-bottom: 50px;
+  font-size: 2.5rem;
+  color: #333;
+}
+
+.products-grid {
+  display: grid;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.product-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.product-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
+}
+
+.product-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-overlay {
+  opacity: 1;
+}
+
+.quick-view {
+  background: white;
+  color: #333;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.quick-view:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.product-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.discount-badge {
+  background: #ff4757;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.product-info {
+  padding: 20px;
+}
+
+.product-info h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.product-info h3 a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-vendor {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.product-price {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.current-price {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.original-price {
+  font-size: 1rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.add-to-cart {
+  width: 100%;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.add-to-cart:hover {
+  background: #555;
+}
+
+.add-to-cart:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.products-placeholder {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+/* Quick View Modal */
+.quick-view-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #666;
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  z-index: 1001;
+  animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+  background: #2ed573;
+}
+
+.notification.error {
+  background: #ff4757;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .products {
+    padding: 60px 0;
+  }
+  
+  .products h2 {
+    font-size: 2rem;
+    margin-bottom: 40px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px;
+    padding: 0 20px;
+  }
+  
+  .product-image img {
+    height: 200px;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 10% auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style> 
